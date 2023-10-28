@@ -33,6 +33,34 @@ function load_mailbox(mailbox) {
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+
+  // Retrieve emails for user mailbox
+  fetch(`/emails/${mailbox}`)
+  .then(response => response.json())
+  .then(emails => {
+    // Loop through emails
+    emails.forEach(email => {
+
+      console.log(email);
+
+      // Create div to display each email
+      const newEmail = document.createElement('div');
+      newEmail.className = 'list-group-item';
+      newEmail.innerHTML = `
+        <h6>From: ${email.sender}</h6>
+        <h5>Subject: ${email.subject}</h5>
+        <p>${email.timestamp}</p>
+      `;
+
+      // Change background color if email read using ternary operator
+      newEmail.className += email.read ? ' read' : ' unread';
+
+      
+      // Add click event to view email
+      newEmail.addEventListener('click', view_email(email.id));
+      document.querySelector('#emails-view').append(newEmail);
+    })
+});
 }
 
 function send_email(event) {
@@ -55,9 +83,13 @@ function send_email(event) {
   })
   .then(response => response.json())
   .then(result => {
-      // Print result
+      // Print result to console
       console.log(result);
       // After email is sent, load user's sent mailbox
       load_mailbox('sent');
   });
+}
+
+function view_email(id) {
+  console.log(id);
 }
