@@ -45,12 +45,11 @@ function view_email(id) {
         <li class="list-group-item"><strong>Subject: </strong>${email.subject}</li>
         <li class="list-group-item"><strong>Timestamp: </strong>${email.timestamp}</li>
       </ul>
-        <button class="btn btn-sm btn-outline-primary" id="reply">Reply</button>
       <hr>
       <p>${email.body}</p>
     `;
 
-    // Change email to read
+    // When viewed, change email to read
     if (!email.read) {
       fetch(`/emails/${email.id}`, {
         method: 'PUT',
@@ -60,6 +59,38 @@ function view_email(id) {
       })
     }
 
+    // Archive/unarchive email
+    const archive_btn = document.createElement('button');
+    archive_btn.innerHTML = email.archived ? 'Unarchive' : 'Archive';
+    archive_btn.className = email.archived ? 'btn btn-sm btn-outline-danger' : 'btn btn-sm btn-danger';
+    archive_btn.addEventListener('click', function() {
+      fetch(`/emails/${email.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+            archived: !email.archived
+        })
+      })
+      .then(() => { load_mailbox('inbox')})
+    });
+    document.querySelector('#email-detail').append(archive_btn);
+
+    // Reply to email
+    const reply_btn = document.createElement('button');
+    reply_btn.innerHTML = 'Reply';
+    reply_btn.className = 'btn btn-secondary';
+    reply_btn.addEventListener('click', function() {
+      compose_email();
+
+      // Prefill composition fields
+      document.querySelector('#compose-recipients').value = email.sender;
+      let subject = email.subject;
+      if (subject.split(' ',1)[0] != 'Re:') {
+        subject = 'Re: ' + email.subject;
+      }
+      document.querySelector('#compose-subject').value = subject;
+      document.querySelector('#compose-body').value = `On ${email.timestamp} ${email.sender} wrote:\n${email.body}`;
+    });
+    document.querySelector('#email-header').append(reply_btn);
 });
 }
 
