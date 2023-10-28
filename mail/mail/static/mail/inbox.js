@@ -18,6 +18,7 @@ function compose_email() {
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
+  document.querySelector('#email-detail').style.display = 'none';
 
   // Clear out composition fields
   document.querySelector('#compose-recipients').value = '';
@@ -25,11 +26,49 @@ function compose_email() {
   document.querySelector('#compose-body').value = '';
 }
 
+function view_email(id) {
+
+  fetch(`/emails/${id}`)
+  .then(response => response.json())
+  .then(email => {
+    // Print email
+    console.log(email);
+
+    document.querySelector('#emails-view').style.display = 'none';
+    document.querySelector('#compose-view').style.display = 'none';
+    document.querySelector('#email-detail').style.display = 'block';
+
+    document.querySelector('#email-detail').innerHTML = `
+      <ul class="list-group" id="email-header">
+        <li class="list-group-item"><strong>From: </strong>${email.sender}</li>
+        <li class="list-group-item"><strong>To: </strong>${email.recipients}</li>
+        <li class="list-group-item"><strong>Subject: </strong>${email.subject}</li>
+        <li class="list-group-item"><strong>Timestamp: </strong>${email.timestamp}</li>
+      </ul>
+        <button class="btn btn-sm btn-outline-primary" id="reply">Reply</button>
+      <hr>
+      <p>${email.body}</p>
+    `;
+
+    // Change email to read
+    if (!email.read) {
+      fetch(`/emails/${email.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+            read: true
+        })
+      })
+    }
+
+});
+}
+
 function load_mailbox(mailbox) {
   
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#email-detail').style.display = 'none';
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
@@ -57,7 +96,9 @@ function load_mailbox(mailbox) {
 
       
       // Add click event to view email
-      newEmail.addEventListener('click', view_email(email.id));
+      newEmail.addEventListener('click', function() {
+        view_email(email.id)
+      });
       document.querySelector('#emails-view').append(newEmail);
     })
 });
@@ -90,6 +131,3 @@ function send_email(event) {
   });
 }
 
-function view_email(id) {
-  console.log(id);
-}
