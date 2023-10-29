@@ -2,7 +2,7 @@ body {
   font-family: Garamond, serif;
 }
 
-p {
+.email-body p {
   margin-left: 5px;
 }
 

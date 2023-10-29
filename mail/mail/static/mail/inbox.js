@@ -131,6 +131,9 @@ function load_mailbox(mailbox) {
     mailbox.charAt(0).toUpperCase() + mailbox.slice(1)
   }</h3>`;
 
+  // Determine whether to display sender or recipient based on the current mailbox
+  const displayField = mailbox === "sent" ? "recipients" : "sender";
+
   // Retrieve emails for user mailbox
   fetch(`/emails/${mailbox}`)
     .then((response) => response.json())
@@ -141,7 +144,11 @@ function load_mailbox(mailbox) {
         const emailSubject = email.subject ? email.subject : "(No subject)";
         newEmail.className = "list-group-item";
         newEmail.innerHTML = `
-        <h6><strong>From: </strong>${email.sender}</h6>
+        <h6><strong>${
+          displayField === "sender"
+            ? "From: " + email.sender
+            : "To: " + email.recipients
+        }</strong></h6>
         <h5><strong>Subject: </strong>${emailSubject}</h5>
         <p>${email.timestamp}</p>
       `;
