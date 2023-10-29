@@ -1,11 +1,51 @@
+body {
+  font-family: Garamond, serif;
+}
+
+p {
+  margin-left: 5px;
+}
+
 textarea {
-    min-height: 400px;
+  min-height: 400px;
+}
+
+ul#email-info {
+  list-style: none;
+  margin: 0 5px;
+  padding: 0;
+}
+
+.btn {
+  font-weight: bold;
+  margin: 0 0 5px 5px;
+}
+
+.btn#submit-email {
+  margin: 5px 0 0 0;
+}
+
+.list-group-item {
+  border: 1px solid black;
+}
+
+.list-group-item:hover {
+  cursor: pointer;
+}
+
+.navbar {
+  padding-left: 0;
+  margin-bottom: 10px;
+}
+
+.navbar-brand {
+  margin-left: 10px;
 }
 
 .read {
-    background-color: lightgray;
+  background-color: lightgray;
 }
 
 .unread {
-    background-color: white;
+  background-color: white;
 }
